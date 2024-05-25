@@ -1,17 +1,27 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import moment from 'moment';
+import Avatar from './Avatar';
 
-const ChatBubble = ({ message, isMyMessage, isRead, timestamp }) => {
+const ChatBubble = ({ message, isMyMessage, isRead, timestamp, senderName, senderProfilePicture }) => {
   return (
-    <View style={[styles.container, isMyMessage ? styles.containerRight : styles.containerLeft]}>
-      <View style={[styles.bubble, isMyMessage ? styles.myBubble : styles.otherBubble]}>
-        <View style={[styles.triangle, isMyMessage ? styles.triangleRight : styles.triangleLeft]} />
-        <Text>{message}</Text>
-      </View>
-      <View style={[styles.messageInfo, isMyMessage ? styles.messageInfoRight : styles.messageInfoLeft]}>
-        {isRead && <Text style={styles.readStatus}>읽음</Text>}
-        <Text style={styles.timestamp}>{moment(timestamp).format('LT')}</Text>
+    <View style={isMyMessage ? styles.containerRight : styles.containerLeft}>
+      {!isMyMessage && (
+        <View style={styles.senderNameContainer}>
+          <Text style={styles.senderName}>{senderName}</Text>
+        </View>
+      )}
+      <View style={[styles.container, isMyMessage ? styles.containerRight : styles.containerLeft]}>
+        {!isMyMessage && <Avatar source={senderProfilePicture} isMyMessage={isMyMessage} />}
+
+        <View style={[styles.bubble, isMyMessage ? styles.myBubble : styles.otherBubble]}>
+          <View style={[styles.triangle, isMyMessage ? styles.triangleRight : styles.triangleLeft]} />
+          <Text>{message}</Text>
+        </View>
+        <View style={[styles.messageInfo, isMyMessage ? styles.messageInfoRight : styles.messageInfoLeft]}>
+          {isRead && <Text style={styles.readStatus}>읽음</Text>}
+          <Text style={styles.timestamp}>{moment(timestamp).format('LT')}</Text>
+        </View>
       </View>
     </View>
   );
@@ -22,6 +32,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 4,
+    marginTop: 10
   },
   containerRight: {
     justifyContent: 'flex-end',
@@ -31,6 +42,15 @@ const styles = StyleSheet.create({
   containerLeft: {
     justifyContent: 'flex-start',
     alignSelf: 'flex-start',
+  },
+  senderNameContainer: {
+    marginLeft: '12%',
+    marginBottom: 4,
+  },
+  senderName: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#5D718C',
   },
   bubble: {
     padding: 8,
@@ -90,7 +110,7 @@ const styles = StyleSheet.create({
     color: '#7C95BC',
   },
   timestamp: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#7C95BC',
     marginTop: 4,
   },
