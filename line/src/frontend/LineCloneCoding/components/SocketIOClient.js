@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 let socket;
 
 const connectToServer = (currentUserId, targetUserId) => {
-    socket = io('http://192.168.35.23:8077', {
+    socket = io('http://:8077', {
         transports: ['websocket'],
     });
 
@@ -17,16 +17,21 @@ const connectToServer = (currentUserId, targetUserId) => {
         userSockets[userId] = socket;
     });
     
+    //메시지 수신하기
+    socket.on(currentUserId,(data)=>{
+        console.log(data)
+    })
     socket.on('disconnect', () => {
         console.log('Disconnected from server');
     });
 };
 
-const sendMessageToUser = () => {
+const sendMessageToUser = (props) => {
+    console.log("보낸 메시지",props)
     const messageData = {
-        senderName: 'user332211',
-        targetUserName: 'user112233',
-        message: 'Hello, server!',
+        senderName: props.senderName,
+        targetUserName: props.targetUserName,
+        message: props.message,
     };
 
     socket.emit('messageSendToUser', messageData);

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.00//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dudgkr.line.db.model.user.mapper.UserMapper">
+    <insert id="regist" parameterType="UserDto">
+        INSERT INTO users (ID,Password,name,phone)
+        VALUES (#{id},#{password},#{name},#{phone})
+    </insert>
+
+    <select id="findAll" resultType="UserDto">
+        SELECT ID,NAME, PASSWORD,PHONE FROM users
+    </select>
+
+    <!-- 아이디 중복 확인 쿼리 -->
+    <select id="findById" resultType="UserDto">
+        SELECT * FROM users where id=#{id}
+    </select>
+
+    <!-- 로그인 쿼리 -->
+    <select id="login" resultType="UserDto">
+        SELECT * FROM users where id=#{id} and password=#{password}
+    </select>
+
+    <update id="modify" parameterType="UserDto">
+        UPDATE users SET name=#{name},phone=#{phone},password=#{password}
+        WHERE ID=#{id}
+    </update>
+
+
+    <delete id="delete" parameterType="UserDto">
+        DELETE FROM users
+        WHERE ID = #{id}
+    </delete>
+</mapper>

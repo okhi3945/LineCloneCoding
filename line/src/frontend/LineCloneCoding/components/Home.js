@@ -7,15 +7,15 @@ const Home = (props) => {
     const targetUserId = "user112233"
     const handleChatNavigation = () => {
         connectToServer(userId, targetUserId);
-
-        // 채팅방으로 이동
-        props.navigation.navigate('ChattingRoom');
+        props.navigation.navigate('ChattingRoom',{currentUserId:userId});
     };
 
     return (
-        <View>
+        <View style={{flex:1,marginTop:'30%'}}>
             <Text>Home</Text>
             <Button title="채팅방으로" onPress={handleChatNavigation} />
+            <Button title="로그인하기" onPress={() => props.navigation.navigate('Login')} />
+            <Button title="회원가입하기" onPress={() => props.navigation.navigate('Register')} />
         </View>
     )
 }

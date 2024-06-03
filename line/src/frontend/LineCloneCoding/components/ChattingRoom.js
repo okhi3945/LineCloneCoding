@@ -4,7 +4,7 @@ import ChatBubble from './ChatBubble';
 import MessageInput from './MessageInput';
 
 
-const ChattingRoom = () => {
+const ChattingRoom = (props) => {
     const scrollViewRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -38,7 +38,7 @@ const ChattingRoom = () => {
                         timestamp={new Date()}
                     />
                     <ChatBubble message="안녕하세요! 반가워요." isMyMessage={false} senderName="영학"
-                        senderProfilePicture={require('./assets/lasco_13974601.png')}
+                        senderProfilePicture={require('../assets/lasco_13974601.png')}
                     />
                     
                 </ScrollView>

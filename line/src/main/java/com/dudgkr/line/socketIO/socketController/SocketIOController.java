@@ -30,7 +30,6 @@ public class SocketIOController {
          * messageSendToUser is socket end point after socket connection user have to send message payload on messageSendToUser event
          */
         this.socketServer.addEventListener("messageSendToUser", Message.class, onSendMessage);
-        this.socketServer.addEventListener("messageReceived", Message.class, onReceiveMessage); // 메시지 수신 이벤트 리스너 등록
     }
 
 
@@ -67,13 +66,6 @@ public class SocketIOController {
              * After sending message to target user we can send acknowledge to sender
              */
             acknowledge.sendAckData("Message send to target user successfully");
-        }
-    };
-
-    public DataListener<Message> onReceiveMessage = new DataListener<Message>() {
-        @Override
-        public void onData(SocketIOClient client, Message message, AckRequest acknowledge) throws Exception {
-            log.info("Received message from {} to {}: {}", message.getSenderName(), message.getTargetUserName(), message.getMessage());
         }
     };
 

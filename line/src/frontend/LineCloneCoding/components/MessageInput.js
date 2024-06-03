@@ -1,6 +1,5 @@
 import { View, TextInput, StyleSheet, Text, InputAccessoryView, TouchableOpacity, } from 'react-native'
 import { useState, useEffect } from 'react'
-import { GiftedChat } from 'react-native-gifted-chat';
 import { connectToServer, sendMessageToUser, socket } from './SocketIOClient.js';
 
 const MessageInput = () => {
@@ -9,41 +8,44 @@ const MessageInput = () => {
         setMessage(event);
     };
     const [messages, setMessages] = useState([]);
+    
+    //메시지 수신
     useEffect(() => {
-        socket.on('message', (data) => {
+        socket.on(currentUserId, (data) => {
             console.log('Received message:', data); // 수신된 메시지 로그 출력
-            setMessages((prevMessages) => GiftedChat.append(prevMessages, data));
+            setMessages((prevMessages) => [...prevMessages, data]);
         });
 
         return () => {
             socket.off('message');
         };
     }, []);
-    const onSend = (newMessages = []) => {
-        console.log('Sending message:', newMessages[0]); // 전송되는 메시지 로그 출력
-        setMessages(GiftedChat.append(messages, newMessages));
+    const onSend = () => {
+        console.log('Sending message:', message); // 전송되는 메시지 로그 출력
+        setMessages((prevMessages) => [...prevMessages, { text: message, user: { _id: 1 } }]);
 
         // 서버에 메시지 전송
         sendMessageToUser({
             senderName: 'user332211',
             targetUserName: 'user112233',
-            message: newMessages[0].text,
+            message: message,
         });
+
+        setMessage(''); // 입력창 초기화
     };
     return (
         <View style={{ position: 'absolute', bottom: 0, width: '103%' }}>
             <InputAccessoryView>
                 <View style={styles.InputBar}>
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                        <GiftedChat
-                            messages={messages}
-                            onSend={onSend}
-                            user={{
-                                _id: 1,
-                            }}
+                        <TextInput
+                            style={{ width: '45%', backgroundColor: '#F4F4F4', borderRadius: 10, marginRight: 10 }}
+                            value={message}
+                            onChangeText={onChangeInput}
+                            placeholder=' Aa'
                         />
 
-                        <TouchableOpacity style={styles.sendButton}>
+                        <TouchableOpacity style={styles.sendButton} onPress={onSend}>
                             <Text>전송</Text>
                         </TouchableOpacity>
                     </View>
