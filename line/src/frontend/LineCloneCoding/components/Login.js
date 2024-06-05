@@ -19,7 +19,7 @@ const Login = (props) => {
                 const userInfo = response.data.List[0];
                 await AsyncStorage.setItem('userInfo', JSON.stringify({ id: userInfo.id, name: userInfo.name, phone: userInfo.phone }));
                 Alert.alert('로그인', "환영합니다!");
-                props.navigation.navigate('Main');
+                props.navigation.navigate('Main', { screen: 'Main', params: { user_id: userInfo.id }});
                 console.log('Login successful:', response.data);
             } else {
                 Alert.alert('로그인 실패', '올바르지 않은 아이디와 비밀번호 입니다.');

@@ -5,8 +5,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Register from './components/Register'
 import Login from './components/Login'
-import Main from './components/Main'
-import Logout from './components/Logout'
+import MainTabNavigator from './components/MainTabNavigator';
+
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -22,16 +22,13 @@ export default function App() {
         <Stack.Screen name="Login" component={Login} options={{
           headerShown: false
         }} />
-        <Stack.Screen name="Main" component={Main}
+        <Stack.Screen name="Main" component={MainTabNavigator}
           options={{ headerShown: false }} />
-        <Stack.Screen
-          name="Logout"
-          component={Logout}
-          options={{ headerShown: false }}
-        />
         <Stack.Screen name="ChattingRoom" component={ChattingRoom} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
+
 

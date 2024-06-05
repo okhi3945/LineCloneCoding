@@ -1,19 +1,91 @@
 //로그인 후 화면
-import { View, Text } from 'react-native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import {useEffect} from 'react'
+import { View, Text, StyleSheet, BackHandler, FlatList } from 'react-native'
+import { useState, useEffect } from 'react'
+import ProfileImage from './ProfileImage'
+import useUserInfo from './useUserInfo';
+import axios from 'axios'
 
-const Main = () => {
+const Main = ({route}) => {
+    console.log(route.params)
+    const {user_id} = route.params;
+    const { currentUserId, currentUserName } = useUserInfo();
+    const [friendsList, setFriendsList] = useState([]);
+    
     useEffect(() => {
-        const fetchUserInfo = async () => {
-            const userInfoString = await AsyncStorage.getItem('userInfo');
-            const userInfo = JSON.parse(userInfoString);
-            console.log('Fetched user info:', userInfo);
+        const fetchFriendsList = async () => {
+            try {
+                const response = await axios.post('http://192.168.35.23:8008/boot/friends/friendsList', {
+                    user_id : user_id
+                });
+                console.log(111)
+                console.log(response.data)
+                setFriendsList(response.data); 
+            } catch (error) {
+                console.error('Failed to fetch friends list:', error);
+            }
         };
-        fetchUserInfo();
+
+        fetchFriendsList();
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            return true;
+        });
+
+        return () => backHandler.remove();
     }, []);
+
+    const renderFriendItem = ({ item }) => (
+        <View style={styles.friendItem}>
+            <Text style={styles.friendName}>{item.friend_name}</Text>
+        </View>
+    );
+
     return (
-        <View></View>
+        <View style={styles.container}>
+            <View style={styles.infoContainer}>
+                <View style={styles.leftContainer}>
+                    <Text style={styles.idText}>{currentUserName}</Text>
+                    <Text>상태 메시지 입력</Text>
+                </View>
+                <View style={styles.rightContainer}>
+                    <ProfileImage source={require("../assets/lasco_13974601.png")} />
+                </View>
+            </View>
+            <FlatList
+                data={friendsList}
+                keyExtractor={(item) => item.friend_id.toString()}
+                renderItem={renderFriendItem}
+                style={styles.friendList}
+            />
+        </View>
     )
 }
+
+const styles = StyleSheet.create({
+    infoContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        height: 90,
+        backgroundColor: '#FFFFFF'
+    }, container: {
+
+    }, tinyImage: {
+        height: 25,
+        width: 25,
+        resizeMode: 'contain'
+    }, topView: {
+        flexDirection: 'row',
+        backgroundColor: 'red',
+        justifyContent: 'flex-end'
+    }, leftContainer: {
+        marginLeft: 20,
+    },
+    rightContainer: {
+        marginRight: 30,
+        marginBottom: 20
+    }, idText: {
+        fontSize: 24,
+        fontWeight: 'bold'
+    }
+})
 export default Main
