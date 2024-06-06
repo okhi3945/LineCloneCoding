@@ -12,4 +12,7 @@ public interface FriendsMapper {
     List<UserDto> friendsList(FriendsDto FriendsDto);
     int accept(FriendsDto FriendsDto);
 
+    List<UserDto> sentFriendRequests(FriendsDto FriendsDto);
+
+    List<UserDto> receivedFriendRequests(FriendsDto FriendsDto);
 }

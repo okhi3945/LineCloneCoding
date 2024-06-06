@@ -66,7 +66,7 @@ function MainTabNavigator() {
         />
         <Tab.Screen name="ChattingRoom" component={ChattingRoom} />
       </Tab.Navigator>
-      <InputModal isVisible={isModalVisible} onBackdropPress={toggleModal} onSend={handleSend} />
+      {currentUserId && <InputModal isVisible={isModalVisible} onBackdropPress={toggleModal} onSend={handleSend} userId={currentUserId}/>}
     </>
   );
 }

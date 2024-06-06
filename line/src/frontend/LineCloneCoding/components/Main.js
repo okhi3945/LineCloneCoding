@@ -5,21 +5,21 @@ import ProfileImage from './ProfileImage'
 import useUserInfo from './useUserInfo';
 import axios from 'axios'
 
-const Main = ({route}) => {
+const Main = ({ route }) => {
     console.log(route.params)
-    const {user_id} = route.params;
+    const { user_id } = route.params;
     const { currentUserId, currentUserName } = useUserInfo();
     const [friendsList, setFriendsList] = useState([]);
-    
+
     useEffect(() => {
         const fetchFriendsList = async () => {
             try {
                 const response = await axios.post('http://192.168.35.23:8008/boot/friends/friendsList', {
-                    user_id : user_id
+                    user_id: user_id
                 });
                 console.log(111)
                 console.log(response.data)
-                setFriendsList(response.data); 
+                setFriendsList(response.data.list);
             } catch (error) {
                 console.error('Failed to fetch friends list:', error);
             }
@@ -34,8 +34,14 @@ const Main = ({route}) => {
     }, []);
 
     const renderFriendItem = ({ item }) => (
+
         <View style={styles.friendItem}>
-            <Text style={styles.friendName}>{item.friend_name}</Text>
+            <View>
+                <ProfileImage source={require("../assets/user.png")} />
+            </View>
+            <View style={{marginLeft:'20%',marginTop:-10}}>
+                <Text style={styles.friendName}>{item.name}</Text>
+            </View>
         </View>
     );
 
@@ -52,7 +58,7 @@ const Main = ({route}) => {
             </View>
             <FlatList
                 data={friendsList}
-                keyExtractor={(item) => item.friend_id.toString()}
+                keyExtractor={(item) => item.id.toString()}
                 renderItem={renderFriendItem}
                 style={styles.friendList}
             />
@@ -67,8 +73,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         height: 90,
         backgroundColor: '#FFFFFF'
-    }, container: {
-
     }, tinyImage: {
         height: 25,
         width: 25,
@@ -86,6 +90,15 @@ const styles = StyleSheet.create({
     }, idText: {
         fontSize: 24,
         fontWeight: 'bold'
-    }
+    }, friendList: {
+        height: "100%",
+        backgroundColor: '#FFFFFF'
+    }, friendItem: {
+        margin: 15,
+        justifyContent: 'center',
+    }, friendName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
 })
 export default Main

@@ -11,6 +11,7 @@ public interface FriendsService {
     List<UserDto> friendsList(FriendsDto friendsDto);
     int accept(FriendsDto friendsDto);
 
-
+    List<UserDto> sentFriendRequests(FriendsDto friendsDto);
+    List<UserDto> receivedFriendRequests(FriendsDto friendsDto);
 
 }

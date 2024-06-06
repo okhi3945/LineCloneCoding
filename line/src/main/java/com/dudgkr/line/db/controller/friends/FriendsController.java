@@ -37,5 +37,22 @@ public class FriendsController {
         return mv;
     }
 
+    @PostMapping("/sentFriendRequests")
+    public HashMap<String,Object> sentFriendRequests(@RequestBody FriendsDto friendsDto){
+        HashMap<String,Object> mv = new HashMap<>();
+        logger.info("내 아이디 확인: {}", friendsDto.getUser_id());
+        List<UserDto> list = friendsService.sentFriendRequests(friendsDto);
+        mv.put("list",list);
+        return mv;
+    }
+
+    @PostMapping("/receivedFriendRequests")
+    public HashMap<String,Object> receivedFriendRequests(@RequestBody FriendsDto friendsDto){
+        HashMap<String,Object> mv = new HashMap<>();
+        logger.info("내 아이디 확인: {}", friendsDto.getUser_id());
+        List<UserDto> list = friendsService.receivedFriendRequests(friendsDto);
+        mv.put("list",list);
+        return mv;
+    }
 
 }
