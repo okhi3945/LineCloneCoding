@@ -43,7 +43,7 @@ const Register = (props) => {
       if (isFormValid) {
         console.log(id, password, name, phone)
         try {
-          const response = await axios.post('http://192.168.123.104:8008/boot/user/regist', {
+          const response = await axios.post('http://192.168.35.23:8008/boot/user/regist', {
             id,
             password,
             name,

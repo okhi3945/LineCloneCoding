@@ -1,25 +1,23 @@
 import io from 'socket.io-client';
 
-let socket;
+let socket = null;
 
-const connectToServer = (currentUserId, targetUserId) => {
-    socket = io('http://192.168.123.104:8077', {
+const connectToServer = () => {
+    // 이미 연결된 소켓이 있는지 확인
+    if (socket && socket.connected) {
+        console.log('이미 서버에 연결되어 있습니다.');
+        return;
+    }
+
+    socket = io('http://192.168.35.23:8077', {
         transports: ['websocket'],
-    });
-
-    socket.on('connect', () => {
-        console.log('Connected to server');
-        socket.emit('join', { userId: currentUserId });
-    });
-
-    socket.on('join', ({ userId }) => {
-        // 사용자 ID를 기반으로 소켓 연결 정보 저장
-        userSockets[userId] = socket;
+        autoConnect: false
     });
 };
 
 const sendMessageToUser = (props) => {
-    console.log("보낸 메시지",props)
+    console.log("보낸 메시지", props)
+
     const messageData = {
         senderName: props.senderName,
         targetUserName: props.targetUserName,

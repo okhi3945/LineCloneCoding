@@ -34,20 +34,6 @@ public class SocketIoConfig {
         config.setPort(environment.getProperty("socket-server.port", Integer.class));
         server = new SocketIOServer(config);
         server.start();
-        server.addConnectListener(new ConnectListener() {
-            @Override
-            public void onConnect(SocketIOClient client) {
-                log.info("new user connected with socket " + client.getSessionId());
-            }
-        });
-
-        server.addDisconnectListener(new DisconnectListener() {
-            @Override
-            public void onDisconnect(SocketIOClient client) {
-                client.getNamespace().getAllClients().stream().forEach(data-> {
-                    log.info("user disconnected "+data.getSessionId().toString());});
-            }
-        });
         return server;
     }
 

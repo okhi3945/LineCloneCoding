@@ -8,4 +8,6 @@ import java.util.List;
 public interface MessagesService {
     int saveMessage(MessagesDto messagesDto);
     List<MessagesDto> fetchMessage(MessagesDto messagesDto);
+    List<MessagesDto> fetchLatestMessagePerChatRoom(UserDto userDto);
+
 }

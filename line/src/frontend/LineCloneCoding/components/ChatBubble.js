@@ -4,6 +4,7 @@ import moment from 'moment';
 import Avatar from './Avatar';
 
 const ChatBubble = ({ message, isMyMessage, isRead, timestamp, senderName, senderProfilePicture }) => {
+  
   return (
     <View style={isMyMessage ? styles.containerRight : styles.containerLeft}>
       {!isMyMessage && (

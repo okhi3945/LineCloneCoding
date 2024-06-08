@@ -2,7 +2,7 @@ import { View, Image, StyleSheet, Text, TouchableOpacity, Alert } from 'react-na
 import React, { useState } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Main from './Main';
-import ChattingRoom from './ChattingRoom';
+import ChattingList from './ChattingList';
 import TabBarIcon from './TabBarIcon'
 import InputModal from './InputModal';
 import useUserInfo from './useUserInfo';
@@ -21,15 +21,15 @@ function MainTabNavigator() {
   const handleSend = async (friend_id) => {
     console.log(friend_id);
     try {
-      const response = await axios.post('http://192.168.123.104:8008/boot/friends/addFriend', {
-        user_id : currentUserId, //dto에 있는 값과 똑같이 보내줘야함
+      const response = await axios.post('http://192.168.35.23:8008/boot/friends/addFriend', {
+        user_id: currentUserId, //dto에 있는 값과 똑같이 보내줘야함
         friend_id,
       });
       console.log(response)
       if (response.status === 200 && response.data.result === 1) {
-        Alert.alert('친구 요청 완료'); 
+        Alert.alert('친구 요청 완료');
       } else {
-        Alert.alert('친구 요청 실패'); 
+        Alert.alert('친구 요청 실패');
       }
     } catch (error) {
       console.error('add friend failed:', error);
@@ -64,9 +64,11 @@ function MainTabNavigator() {
             ),
           }}
         />
-        <Tab.Screen name="ChattingRoom" component={ChattingRoom} />
+        <Tab.Screen name="ChattingList">
+          {props => <ChattingList {...props} currentUserId={currentUserId} />}
+        </Tab.Screen>
       </Tab.Navigator>
-      {currentUserId && <InputModal isVisible={isModalVisible} onBackdropPress={toggleModal} onSend={handleSend} userId={currentUserId}/>}
+      {currentUserId && <InputModal isVisible={isModalVisible} onBackdropPress={toggleModal} onSend={handleSend} userId={currentUserId} />}
     </>
   );
 }

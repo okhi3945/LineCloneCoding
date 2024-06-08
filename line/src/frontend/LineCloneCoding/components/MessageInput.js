@@ -1,6 +1,7 @@
 import { View, TextInput, StyleSheet, Text, InputAccessoryView, TouchableOpacity, } from 'react-native'
 import { useState, useEffect } from 'react'
-import { connectToServer, sendMessageToUser, socket } from './SocketIOClient.js';
+import { sendMessageToUser} from './SocketIOClient.js';
+import axios from 'axios'
 
 const MessageInput = ({ addMessage, currentUserId, targetUserId }) => {
     const [message, setMessage] = useState('');
@@ -8,11 +9,12 @@ const MessageInput = ({ addMessage, currentUserId, targetUserId }) => {
     const onChangeInput = (event) => {
         setMessage(event);
     };
+    
 
     const onSend = async () => {
         if (message.trim() === '') return;
         
-        const newMessage = { text: message, user: { _id: currentUserId } };
+        const newMessage = { message: message, senderName : currentUserId };
         addMessage(newMessage);
 
         try {
@@ -25,11 +27,12 @@ const MessageInput = ({ addMessage, currentUserId, targetUserId }) => {
             });
 
             //메시지 db에 저장
-            await axios.post('https://your-api-url/messages', {
-                senderId: currentUserId,
-                receiverId: targetUserId,
+            await axios.post('http://192.168.35.23:8008/boot/messages/saveMessage', {
+                senderName: currentUserId,
+                targetUserName: targetUserId,
                 message: message,
             });
+
         } catch (error) {
             console.error('Failed to send message:', error);
         }

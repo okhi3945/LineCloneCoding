@@ -1,4 +1,3 @@
-import { StyleSheet, Text, View } from 'react-native';
 import ChattingRoom from './components/ChattingRoom'
 import Home from './components/Home'
 import { NavigationContainer } from '@react-navigation/native';
@@ -24,11 +23,12 @@ export default function App() {
         }} />
         <Stack.Screen name="Main" component={MainTabNavigator}
           options={{ headerShown: false }} />
-        <Stack.Screen name="ChattingRoom" component={ChattingRoom} />
+        <Stack.Screen name="ChattingRoom" component={ChattingRoom} options={({ route }) => ({
+          headerTitle: route.params.partner,
+        })}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
-
 

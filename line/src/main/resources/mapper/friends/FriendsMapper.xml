@@ -10,7 +10,7 @@
 
 
     <select id="friendsList" parameterType="FriendsDto" resultType="UserDto">
-        SELECT u.id, u.name, u.phone
+        SELECT u.id, u.name, u.phone, u.statusMessage
         FROM users u
                  JOIN friends f ON (u.id = f.friend_id OR u.id = f.user_id)
         WHERE (f.friend_id = #{user_id} OR f.user_id = #{user_id})

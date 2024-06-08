@@ -8,7 +8,11 @@ import lombok.Setter;
 public class MessagesDto {
 
     private long message_id;
-    private String sender_id;
-    private String receiver_id;
-    private String message_content;
+    private String senderName;
+    private String targetUserName;
+    private String message;
+    private String timestamp;
+    private boolean read_status;
+    private String targetUserNameName;
+
 }

@@ -1,7 +1,11 @@
 import { StyleSheet, View, ScrollView, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 import ChatBubble from './ChatBubble';
 import MessageInput from './MessageInput';
+import { connectToServer, socket } from './SocketIOClient';
+import axios from 'axios'
+import { useFocusEffect } from '@react-navigation/native';
+
 
 const ChattingRoom = (props) => {
     const { route } = props;
@@ -22,27 +26,6 @@ const ChattingRoom = (props) => {
 
     useEffect(() => {
 
-        const fetchMessages = async () => {
-            try {
-                const response = await axios.get(`https://your-api-url/messages?userId=${currentUserId}&targetId=${targetUserId}`);
-                setMessages(response.data);
-                scrollToBottom();
-            } catch (error) {
-                console.error('Failed to fetch messages:', error);
-            }
-        };
-
-        fetchMessages();
-
-        //소켓 연결
-        connectToServer(currentUserId, targetUserId);
-
-        //메시지 수신하기
-        socket.on(currentUserId, (data) => {
-            console.log(data)
-            addMessage(data);
-        })
-
         const keyboardDidShowListener = Keyboard.addListener(
             'keyboardDidShow',
             scrollToBottom
@@ -50,16 +33,51 @@ const ChattingRoom = (props) => {
 
         return () => {
             keyboardDidShowListener.remove();
-            socket.on('disconnect', () => {
-                console.log('Disconnected from server');
-            });
+        };
+    }, []);
+
+    const fetchMessages = async () => {
+        try {
+            const response = await axios.get(`http://192.168.35.23:8008/boot/messages/fetchMessage?senderName=${currentUserId}&targetUserName=${targetUserId}`);
+            console.log(response.data.list)
+            setMessages(response.data.list);
+            scrollToBottom();
+        } catch (error) {
+            console.error('Failed to fetch messages:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchMessages();
+        connectToServer();
+
+        // 기존에 등록된 이벤트 리스너를 제거하고 새로 등록
+        socket.off(currentUserId).on(currentUserId, async (data) => {
+            console.log(data);
+            addMessage(data);
+            try {
+                await axios.post('http://192.168.35.23:8008/boot/messages/saveMessage', {
+                    senderName: data.senderName,
+                    targetUserName: currentUserId,
+                    message: data.message,
+                });
+            } catch (error) {
+                console.error('메시지 저장 실패:', error);
+            }
+        });
+
+        return () => {
+            // 화면에서 벗어날 때 실행될 로직
+            socket.off(currentUserId); // 현재 사용자를 대상으로 하는 이벤트 리스너를 제거
+            socket.disconnect();
         };
     }, []);
 
     // 메시지 목록을 ChatBubble 컴포넌트로 렌더링
     const renderMessages = messages.map((msg, index) => (
-        <ChatBubble key={index} message={msg.text} isMyMessage={msg.user._id === currentUserId} />
+        <ChatBubble key={index} message={msg.message} isMyMessage={msg.senderName === currentUserId} senderProfilePicture={require('../assets/lasco_13974601.png')} senderName="임임임" />
     ));
+
     return (
         <KeyboardAvoidingView
             style={styles.container}

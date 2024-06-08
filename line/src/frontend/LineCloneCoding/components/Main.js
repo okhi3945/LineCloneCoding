@@ -5,7 +5,7 @@ import ProfileImage from './ProfileImage'
 import useUserInfo from './useUserInfo';
 import axios from 'axios'
 
-const Main = ({ route }) => {
+const Main = ({ route, navigation }) => {
     console.log(route.params)
     const { user_id } = route.params;
     const { currentUserId, currentUserName } = useUserInfo();
@@ -14,7 +14,7 @@ const Main = ({ route }) => {
     useEffect(() => {
         const fetchFriendsList = async () => {
             try {
-                const response = await axios.post('http://192.168.123.104:8008/boot/friends/friendsList', {
+                const response = await axios.post('http://192.168.35.23:8008/boot/friends/friendsList', {
                     user_id: user_id
                 });
                 console.log(111)
@@ -36,11 +36,9 @@ const Main = ({ route }) => {
     const renderFriendItem = ({ item }) => (
 
         <View style={styles.friendItem}>
-            <TouchableOpacity onPress={()=> props.navigation.navigate('ChattingRoom',{currentUserId:user_id, targetUserId : item.id})}> 
-                <View>
-                    <ProfileImage source={require("../assets/user.png")} />
-                </View>
-                <View style={{ marginLeft: '20%', marginTop: -10 }}>
+            <TouchableOpacity onPress={() => navigation.navigate('ChattingRoom', { currentUserId: user_id, targetUserId: item.id, partner : item.name  })}>
+                <ProfileImage source={require("../assets/user.png")} />
+                <View style={{ marginLeft: '20%',marginTop:-15 }}>
                     <Text style={styles.friendName}>{item.name}</Text>
                     <Text>{item.statusMessage}</Text>
                 </View>
@@ -49,7 +47,7 @@ const Main = ({ route }) => {
     );
 
     return (
-        <View style={styles.container}>
+        <View>
             <View style={styles.infoContainer}>
                 <View style={styles.leftContainer}>
                     <Text style={styles.idText}>{currentUserName}</Text>

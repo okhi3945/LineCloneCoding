@@ -2,6 +2,7 @@ package com.dudgkr.line.db.service.messages;
 
 import com.dudgkr.line.db.model.messages.dto.MessagesDto;
 import com.dudgkr.line.db.model.messages.mapper.MessagesMapper;
+import com.dudgkr.line.db.model.user.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,5 +23,10 @@ public class MessagesServiceImpl implements MessagesService{
     @Override
     public List<MessagesDto> fetchMessage(MessagesDto messagesDto) {
         return messagesMapper.fetchMessage(messagesDto);
+    }
+
+    @Override
+    public List<MessagesDto> fetchLatestMessagePerChatRoom(UserDto userDto) {
+        return messagesMapper.fetchLatestMessagePerChatRoom(userDto);
     }
 }

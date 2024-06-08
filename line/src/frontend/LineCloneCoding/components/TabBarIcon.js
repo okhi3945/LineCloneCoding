@@ -4,7 +4,7 @@ const TabBarIcon = (focused, name) => {
   let iconImagePath;
   if (name === 'Main') {
     iconImagePath = require('../assets/home.png');
-  } else if(name === 'ChattingRoom'){
+  } else if(name === 'ChattingList'){
     iconImagePath = require('../assets/messenger.png')
   } 
 

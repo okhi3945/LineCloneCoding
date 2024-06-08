@@ -22,6 +22,8 @@
         SELECT * FROM users where id=#{id} and password=#{password}
     </select>
 
+
+
     <update id="modify" parameterType="UserDto">
         UPDATE users SET name=#{name},phone=#{phone},password=#{password}
         WHERE ID=#{id}

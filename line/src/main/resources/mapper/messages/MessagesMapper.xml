@@ -5,31 +5,51 @@
 <mapper namespace="com.dudgkr.line.db.model.messages.mapper.MessagesMapper">
 
     <insert id="saveMessage" parameterType="MessagesDto">
-        INSERT INTO messages (sender_id, receiver_id, message_content, timestamp, read_status)
-        VALUES (#{senderId}, #{receiverId}, #{message}, NOW(), FALSE);
+        INSERT INTO messages (senderName, targetUserName, message, timestamp, read_status)
+        VALUES (#{senderName}, #{targetUserName}, #{message}, NOW(), FALSE);
     </insert>
 
 
-    <select id="fetchMessage" parameterType="MessagesDto" resultType="MessagesDto">
-        SELECT * FROM messages
-        WHERE (sender_id = #{senderId} AND receiver_id = #{receiverId}) OR (sender_id = #{receiverId} AND receiver_id = #{senderId})
+    <select id="fetchMessage" parameterType="MessagesDto" resultMap="MessagesResultMap">
+        SELECT message_id, senderName, targetUserName, message, timestamp, read_status
+        FROM messages
+        WHERE (senderName = #{senderName} AND targetUserName = #{targetUserName})
+           OR (senderName = #{targetUserName} AND targetUserName = #{senderName})
         ORDER BY timestamp ASC;
     </select>
+
+    <resultMap id="MessagesResultMap" type="MessagesDto">
+        <id property="message_id" column="message_id"/>
+        <result property="senderName" column="senderName"/>
+        <result property="targetUserName" column="targetUserName"/>
+        <result property="message" column="message"/>
+        <result property="timestamp" column="timestamp"/>
+        <result property="read_status" column="read_status"/>
+    </resultMap>
 
 
     <!-- 각 채팅방 별로 가장 최근 메시지 가져오기-->
     <select id="fetchLatestMessagePerChatRoom" parameterType="UserDto" resultType="MessagesDto">
-        SELECT * FROM messages
-        WHERE message_id IN (
+        SELECT
+            m.message_id,
+            m.senderName,
+            m.targetUserName,
+            m.message,
+            m.timestamp,
+            m.read_status,
+            u.name AS targetUserNameName
+        FROM messages m
+                 LEFT JOIN users u ON m.targetUserName = u.id
+        WHERE m.message_id IN (
             SELECT MAX(message_id)
             FROM messages
-            WHERE sender_id = #{id} OR receiver_id = #{id}
+            WHERE senderName = #{id} OR targetUserName = #{id}
             GROUP BY CASE
-                         WHEN sender_id = #{id} THEN receiver_id
-                         ELSE sender_id
+                         WHEN senderName = #{id} THEN targetUserName
+                         ELSE senderName
                          END
         )
-        ORDER BY timestamp DESC;
+        ORDER BY m.timestamp DESC;
     </select>
 
 </mapper>
