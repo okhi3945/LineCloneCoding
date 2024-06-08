@@ -7,11 +7,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 const Login = (props) => {
     const [id, setId] = useState('');
     const [password, setPassword] = useState('');
-    const [isLoginValid, setIsLoginValid] = useState(false)
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('http://192.168.35.23:8008/boot/user/login', {
+            const response = await axios.post('http://192.168.123.104:8008/boot/user/login', {
                 id,
                 password,
             });
@@ -25,7 +24,7 @@ const Login = (props) => {
                 Alert.alert('로그인 실패', '올바르지 않은 아이디와 비밀번호 입니다.');
             }
         } catch (error) {
-            console.error('Registration failed:', error);
+            console.error('login failed:', error);
             Alert.alert('Error', '로그인 도중 오류가 발생하였습니다.');
         }
     }

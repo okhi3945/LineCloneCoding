@@ -2,37 +2,42 @@ import { View, TextInput, StyleSheet, Text, InputAccessoryView, TouchableOpacity
 import { useState, useEffect } from 'react'
 import { connectToServer, sendMessageToUser, socket } from './SocketIOClient.js';
 
-const MessageInput = () => {
+const MessageInput = ({ addMessage, currentUserId, targetUserId }) => {
     const [message, setMessage] = useState('');
+
     const onChangeInput = (event) => {
         setMessage(event);
     };
-    const [messages, setMessages] = useState([]);
-    
-    //메시지 수신
-    useEffect(() => {
-        socket.on(currentUserId, (data) => {
-            console.log('Received message:', data); // 수신된 메시지 로그 출력
-            setMessages((prevMessages) => [...prevMessages, data]);
-        });
 
-        return () => {
-            socket.off('message');
-        };
-    }, []);
-    const onSend = () => {
-        console.log('Sending message:', message); // 전송되는 메시지 로그 출력
-        setMessages((prevMessages) => [...prevMessages, { text: message, user: { _id: 1 } }]);
+    const onSend = async () => {
+        if (message.trim() === '') return;
+        
+        const newMessage = { text: message, user: { _id: currentUserId } };
+        addMessage(newMessage);
 
-        // 서버에 메시지 전송
-        sendMessageToUser({
-            senderName: 'user332211',
-            targetUserName: 'user112233',
-            message: message,
-        });
+        try {
 
-        setMessage(''); // 입력창 초기화
+            //메시지 소켓에 전송
+            await sendMessageToUser({
+                senderName: currentUserId,
+                targetUserName: targetUserId,
+                message: message,
+            });
+
+            //메시지 db에 저장
+            await axios.post('https://your-api-url/messages', {
+                senderId: currentUserId,
+                receiverId: targetUserId,
+                message: message,
+            });
+        } catch (error) {
+            console.error('Failed to send message:', error);
+        }
+
+        setMessage('');
     };
+
+
     return (
         <View style={{ position: 'absolute', bottom: 0, width: '103%' }}>
             <InputAccessoryView>

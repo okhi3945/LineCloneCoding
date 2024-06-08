@@ -18,14 +18,19 @@
           AND u.id != #{user_id}
     </select>
 
+    <!-- 친구 요청 수락 -->
     <update id="accept" parameterType="FriendsDto">
         UPDATE friends SET status = 'accepted' WHERE user_id = #{user_id} AND friend_id = #{friend_id};
     </update>
 
+    <!-- 요청 취소 -->
+    <delete id="cancelRequest" parameterType="FriendsDto">
+        DELETE FROM friends WHERE user_id = #{user_id} AND friend_id = #{friend_id} AND status = 'pending';
+    </delete>
 
     <!-- 자신에게 온 친구요청 조회-->
     <select id="sentFriendRequests" parameterType="FriendsDto" resultType="UserDto">
-        SELECT u.id, u.name, u.phone
+        SELECT u.id, u.name, u.phone, u.statusMessage
         FROM users u
                  JOIN friends f ON u.id = f.friend_id
         WHERE f.user_id = #{user_id}
@@ -41,4 +46,8 @@
         WHERE f.friend_id = #{user_id}
           AND f.status = 'pending'
     </select>
+
+
+
+
 </mapper>

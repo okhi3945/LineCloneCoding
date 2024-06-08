@@ -20,6 +20,13 @@ public class UserController {
     Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private UserService userService;
+
+    // 서버 연결 확인
+    @PostMapping("/")
+    public void hello(){
+        logger.info("hello world");
+    }
+    
     //회원가입 - mv : model and view
     @PostMapping("/regist")
     public HashMap<String,Object> regist(@RequestBody UserDto userDto){

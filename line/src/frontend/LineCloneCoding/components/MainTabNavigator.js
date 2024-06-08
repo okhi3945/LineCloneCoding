@@ -21,7 +21,7 @@ function MainTabNavigator() {
   const handleSend = async (friend_id) => {
     console.log(friend_id);
     try {
-      const response = await axios.post('http://192.168.35.23:8008/boot/friends/addFriend', {
+      const response = await axios.post('http://192.168.123.104:8008/boot/friends/addFriend', {
         user_id : currentUserId, //dto에 있는 값과 똑같이 보내줘야함
         friend_id,
       });

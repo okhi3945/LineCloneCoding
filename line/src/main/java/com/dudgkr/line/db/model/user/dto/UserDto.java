@@ -11,5 +11,6 @@ public class UserDto {
     private String password;
     private String name;
     private String phone;
+    private String statusMessage;
 
 }

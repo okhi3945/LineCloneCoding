@@ -15,7 +15,7 @@ const InputModal = ({ isVisible, onBackdropPress, onSend, userId }) => {
         const fetchData = async () => {
             try {
                 const endpoint = viewMode === 'received' ? '/receivedFriendRequests' : '/sentFriendRequests';
-                const response = await axios.post(`http://192.168.35.23:8008/boot/friends${endpoint}`, {
+                const response = await axios.post(`http://192.168.123.104:8008/boot/friends${endpoint}`, {
                     user_id: userId
                 }
                 );

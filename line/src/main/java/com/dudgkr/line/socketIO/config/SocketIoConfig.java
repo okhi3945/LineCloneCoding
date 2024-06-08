@@ -40,6 +40,7 @@ public class SocketIoConfig {
                 log.info("new user connected with socket " + client.getSessionId());
             }
         });
+
         server.addDisconnectListener(new DisconnectListener() {
             @Override
             public void onDisconnect(SocketIOClient client) {
