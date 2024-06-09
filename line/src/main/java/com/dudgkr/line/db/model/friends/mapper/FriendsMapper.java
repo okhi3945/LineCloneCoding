@@ -11,6 +11,7 @@ public interface FriendsMapper {
     int addFriend(FriendsDto FriendsDto);
     List<UserDto> friendsList(FriendsDto FriendsDto);
     int accept(FriendsDto FriendsDto);
+    int cancelRequest(FriendsDto friendsDto);
 
     List<UserDto> sentFriendRequests(FriendsDto FriendsDto);
 

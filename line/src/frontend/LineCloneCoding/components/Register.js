@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image, ScrollView, } from 'react-native';
 import axios from 'axios';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const Register = (props) => {
   const [id, setId] = useState('');
@@ -12,9 +13,9 @@ const Register = (props) => {
   const [isDisabled, setIsDisabled] = useState(true)
   const [isIdDoubleCheck, setIsIdDoubleCheck] = useState(false);
 
-  // 아이디 입력 검증 -> 영어만 입력, 4~16자 제한
+  // 아이디 입력 검증 -> 영어, 숫자 입력, 4~16자 제한
   const validateId = (text) => {
-    const re = /^[A-Za-z]{4,16}$/;
+    const re = /^[A-Za-z0-9]{4,16}$/;
     return re.test(text);
   };
 
@@ -39,7 +40,8 @@ const Register = (props) => {
   const handleRegister = async () => {
     if (!isIdDoubleCheck) {
       Alert.alert('아이디 중복확인', "아이디 중복확인을 진행해주세요!")
-    } else {
+    } 
+
       if (isFormValid) {
         console.log(id, password, name, phone)
         try {
@@ -48,6 +50,7 @@ const Register = (props) => {
             password,
             name,
             phone,
+            statusMessage : "1"
           });
           Alert.alert('Success', "회원가입에 성공하였습니다!")
           props.navigation.navigate('Home')
@@ -74,9 +77,8 @@ const Register = (props) => {
           Alert.alert("이름 오류", "유효하지 않은 이름입니다!")
         } else if (!isPhoneValid) {
           Alert.alert("전화 번호 오류", "유효하지 않은 전화번호 입니다!")
-        }
+        } 
       }
-    }
   };
 
   const validateForm = () => {
@@ -85,15 +87,18 @@ const Register = (props) => {
     const isConfirmPasswordValid = confirmPassword.trim() !== '' && password === confirmPassword;
     const isNameValid = name.trim() !== '' && validateName(name);
     const isPhoneValid = phone.trim() !== '' && validatePhone(phone);
+    console.log(isPhoneValid)
+    
 
     setIsFormValid(
       isIdValid && isPasswordValid && isConfirmPasswordValid && isNameValid && isPhoneValid
     );
+    handleRegister()
   };
 
   const idDoubleCheck = async () => {
     try {
-      const response = await axios.post('http://:8008/boot/user/checkId', {
+      const response = await axios.post('http://192.168.35.23:8008/boot/user/checkId', {
         id,
       });
       if (response.data && response.data.List.length === 0) {
@@ -109,75 +114,74 @@ const Register = (props) => {
     }
   };
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => props.navigation.goBack()}
-      >
-        <Text style={styles.backButtonText}>뒤로</Text>
-      </TouchableOpacity>
-      <Image source={require('../assets/LINE_Corporation_Logo.png')} style={styles.LoginImage} />
-      <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#00B900' }}>회원 가입</Text>
-      <View style={styles.idContainer}>
-        <TextInput
-          style={styles.InputIdForm}
-          placeholder="아이디"
-          value={id}
-          onChangeText={(text) => {
-            setId(text);
-            validateForm();
-            setIsDisabled(text.trim() === '');
-            setIsIdDoubleCheck(false)
-          }}
-        />
-        <TouchableOpacity style={[styles.doubleCheckButton,
-        isDisabled && styles.disabledButton]} disabled={isDisabled} onPress={idDoubleCheck}>
-          <Text style={styles.dobuleCheckButtonText}>중복확인</Text>
-        </TouchableOpacity>
-      </View>
-      <TextInput
-        style={styles.InputForm}
-        placeholder="비밀번호"
-        secureTextEntry={true}
-        value={password}
-        onChangeText={(text) => {
-          setPassword(text);
-          validateForm();
-        }}
-      />
-      <TextInput
-        style={styles.InputForm}
-        placeholder="비밀번호 확인"
-        secureTextEntry={true}
-        value={confirmPassword}
-        onChangeText={(text) => {
-          setConfirmPassword(text);
-          validateForm();
-        }}
-      />
-      <TextInput
-        style={styles.InputForm}
-        placeholder="이름"
-        value={name}
-        onChangeText={(text) => {
-          setName(text);
-          validateForm();
-        }}
-      />
-      <TextInput
-        style={styles.InputForm}
-        placeholder="전화번호 010xxxxxxxx"
-        keyboardType="phone-pad"
-        value={phone}
-        onChangeText={(text) => {
-          setPhone(text);
-          validateForm();
-        }}
-      />
-      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-        <Text style={styles.registerButtonText}>회원가입</Text>
-      </TouchableOpacity>
-    </View>
+    <KeyboardAwareScrollView >
+      <ScrollView keyboardShouldPersistTaps="handled" style={{minHeight: 650,}}>
+        <View style={styles.container} >
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => props.navigation.goBack()}
+          >
+            <Text style={styles.backButtonText}>뒤로</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.registerButton} onPress={validateForm}>
+            <Text style={styles.registerButtonText}>회원가입</Text>
+          </TouchableOpacity>
+          <Image source={require('../assets/LINE_Corporation_Logo.png')} style={styles.LoginImage} />
+          <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#00B900' }}>회원 가입</Text>
+          <View style={styles.idContainer}>
+            <TextInput
+              style={styles.InputIdForm}
+              placeholder="아이디"
+              value={id}
+              onChangeText={(text) => {
+                setId(text);
+                setIsDisabled(text.trim() === '');
+                setIsIdDoubleCheck(false)
+              }}
+            />
+            <TouchableOpacity style={[styles.doubleCheckButton,
+            isDisabled && styles.disabledButton]} disabled={isDisabled} onPress={idDoubleCheck}>
+              <Text style={styles.dobuleCheckButtonText}>중복확인</Text>
+            </TouchableOpacity>
+          </View>
+          <TextInput
+            style={styles.InputForm}
+            placeholder="비밀번호"
+            secureTextEntry={true}
+            value={password}
+            onChangeText={(text) => {
+              setPassword(text);
+            }}
+          />
+          <TextInput
+            style={styles.InputForm}
+            placeholder="비밀번호 확인"
+            secureTextEntry={true}
+            value={confirmPassword}
+            onChangeText={(text) => {
+              setConfirmPassword(text);
+            }}
+          />
+          <TextInput
+            style={styles.InputForm}
+            placeholder="이름"
+            value={name}
+            onChangeText={(text) => {
+              setName(text);
+            }}
+          />
+          <TextInput
+            style={styles.InputForm}
+            placeholder="전화번호 010xxxxxxxx"
+            keyboardType="phone-pad"
+            value={phone}
+            onChangeText={(text) => {
+              setPhone(text);
+            }}
+          />
+        </View>
+      </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -193,6 +197,7 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
+    fontWeight: 'bold'
   },
   InputIdForm: {
     padding: 15,
@@ -219,8 +224,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 4,
-    marginTop: 20,
-    width: '40%',
+    position: 'absolute',
+    top: -20,
+    right: 20,
+    padding: 10,
     alignItems: 'center'
   }, registerButtonText: {
     color: '#FFFFFF',

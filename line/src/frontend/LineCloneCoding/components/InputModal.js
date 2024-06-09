@@ -1,31 +1,33 @@
 // InputModal.js
-import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { useState, useEffect, useContext } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import Modal from 'react-native-modal';
 import axios from 'axios';
 import ProfileImage from './ProfileImage'
+import { fetchFriendsList } from './api';
+import { FriendsContext } from './context'
 
-const InputModal = ({ isVisible, onBackdropPress, onSend, userId }) => {
+const InputModal = ({ isVisible, onBackdropPress, onSend, userId, }) => {
+    const { setFriendsList } = useContext(FriendsContext);
     const [text, setText] = useState('');
     const [viewMode, setViewMode] = useState('received');
     const [friendRequests, setFriendRequests] = useState([]);
 
-    useEffect(() => {
-
-        const fetchData = async () => {
-            try {
-                const endpoint = viewMode === 'received' ? '/receivedFriendRequests' : '/sentFriendRequests';
-                const response = await axios.post(`http://192.168.35.23:8008/boot/friends${endpoint}`, {
-                    user_id: userId
-                }
-                );
-                console.log(response.data.list)
-                setFriendRequests(response.data.list);
-            } catch (error) {
-                console.error("친구 요청 데이터를 가져오는데 실패했습니다.", error);
+    const fetchData = async () => {
+        try {
+            const endpoint = viewMode === 'received' ? '/receivedFriendRequests' : '/sentFriendRequests';
+            const response = await axios.post(`http://192.168.35.23:8008/boot/friends${endpoint}`, {
+                user_id: userId
             }
-        };
-
+            );
+            console.log(response.data.list)
+            setFriendRequests(response.data.list);
+        } catch (error) {
+            console.error("친구 요청 데이터를 가져오는데 실패했습니다.", error);
+        }
+    };
+    
+    useEffect(() => {
         fetchData();
     }, [viewMode, userId]);
 
@@ -34,6 +36,36 @@ const InputModal = ({ isVisible, onBackdropPress, onSend, userId }) => {
         onSend(text);
         setText('');
     };
+
+    const accept = async (friend_id) => {
+        try {
+            const response = await axios.post('http://192.168.35.23:8008/boot/friends/accept', {
+                user_id: userId,
+                friend_id: friend_id,
+            });
+            console.log(response)
+            Alert.alert("친구 요청 수락")
+            fetchData();
+            const updatedList = await fetchFriendsList(userId);
+            setFriendsList(updatedList);
+        } catch (error) {
+            console.error('accept failed:', error);
+        }
+    }
+
+    const cancelRequest = async (friend_id) => {
+        try {
+            const response = await axios.post('http://192.168.35.23:8008/boot/friends/cancelRequest', {
+                user_id: userId,
+                friend_id: friend_id,
+            });
+            console.log(response)
+            Alert.alert("친구 요청 취소")
+            fetchData();
+        } catch (error) {
+            console.error('cancelRequest failed:', error);
+        }
+    }
 
     const renderFriendItem = ({ item }) => (
 
@@ -48,13 +80,13 @@ const InputModal = ({ isVisible, onBackdropPress, onSend, userId }) => {
                 {viewMode === 'sent' ? (
                     <TouchableOpacity
                         style={styles.actionButton}
-                        onPress={() => {/* 요청 취소 로직 */ }}>
+                        onPress={() => { cancelRequest(item.id) }}>
                         <Text style={styles.actionButtonText}>취소</Text>
                     </TouchableOpacity>
                 ) : viewMode === 'received' ? (
                     <TouchableOpacity
                         style={styles.actionButton}
-                        onPress={() => {/* 요청 수락 로직 */ }}>
+                        onPress={() => { accept(item.id) }}>
                         <Text style={styles.actionButtonText}>수락</Text>
                     </TouchableOpacity>
                 ) : null}
@@ -76,9 +108,22 @@ const InputModal = ({ isVisible, onBackdropPress, onSend, userId }) => {
                     placeholder="친구의 아이디를 입력하세요"
                 />
                 <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-                    <Text>보내기</Text>
+                    <Text style={{ color: 'white', fontWeight: 'bold' }}>보내기</Text>
                 </TouchableOpacity>
-
+                <View style={styles.viewModeButtons}>
+                    <TouchableOpacity
+                        style={viewMode === 'received' ? styles.viewModeButtonSelected : styles.viewModeButton}
+                        onPress={() => setViewMode('received')}
+                    >
+                        <Text style={viewMode === 'received' ? styles.viewModeButtonTextSelected : styles.viewModeButtonText}>받은 요청</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={viewMode === 'sent' ? styles.viewModeButtonSelected : styles.viewModeButton}
+                        onPress={() => setViewMode('sent')}
+                    >
+                        <Text style={viewMode === 'sent' ? styles.viewModeButtonTextSelected : styles.viewModeButtonText}>보낸 요청</Text>
+                    </TouchableOpacity>
+                </View>
 
                 <FlatList
                     data={friendRequests}
@@ -146,8 +191,32 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     }, buttonAccept: {
         alignItems: 'flex-end',
-        marginTop:-27
-    }
+        marginTop: -27
+    }, viewModeButtons: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginVertical: 10,
+    },
+    viewModeButton: {
+        marginHorizontal: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 20,
+        backgroundColor: 'lightgray',
+    },
+    viewModeButtonSelected: {
+        marginHorizontal: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 20,
+        backgroundColor: 'blue',
+    },
+    viewModeButtonText: {
+        color: 'black',
+    },
+    viewModeButtonTextSelected: {
+        color: 'white',
+    },
 });
 
 export default InputModal;

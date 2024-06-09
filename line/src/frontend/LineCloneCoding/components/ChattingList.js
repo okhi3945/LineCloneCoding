@@ -1,30 +1,33 @@
 import { View, BackHandler, FlatList, TouchableOpacity, StyleSheet, Text } from 'react-native'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import ProfileImage from './ProfileImage'
 import axios from 'axios'
+import { useFocusEffect } from '@react-navigation/native';
 
 const ChattingList = ({ currentUserId, navigation }) => {
 
     const [chatList, setChatList] = useState([]);
 
-    useEffect(() => {
-        const fetchChatList = async () => {
-            try {
-                const response = await axios.get(`http://192.168.35.23:8008/boot/messages/fetchLatestMessagePerChatRoom?senderName=${currentUserId}`);
-                console.log(response.data)
-                setChatList(response.data.list);
-            } catch (error) {
-                console.error('Failed to fetch friends list:', error);
-            }
-        };
+    useFocusEffect(
+        useCallback(() => {
+            const fetchChatList = async () => {
+                try {
+                    const response = await axios.get(`http://192.168.35.23:8008/boot/messages/fetchLatestMessagePerChatRoom?senderName=${currentUserId}`);
+                    console.log(response.data)
+                    setChatList(response.data.list);
+                } catch (error) {
+                    console.error('Failed to fetch friends list:', error);
+                }
+            };
 
-        fetchChatList();
-        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            return true;
-        });
+            fetchChatList();
+            const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+                return true;
+            });
 
-        return () => backHandler.remove();
-    }, []);
+            return () => backHandler.remove();
+        }, [])
+    );
 
     const renderChatItem = ({ item }) => (
 

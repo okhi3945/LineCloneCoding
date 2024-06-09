@@ -55,4 +55,23 @@ public class FriendsController {
         return mv;
     }
 
+    @PostMapping("/accept")
+    public HashMap<String,Object> accept(@RequestBody FriendsDto friendsDto){
+        HashMap<String,Object> mv = new HashMap<>();
+        logger.info("내 아이디 확인: {}", friendsDto.getUser_id());
+        logger.info("상대 아이디 확인: {}", friendsDto.getFriend_id());
+        int result= friendsService.accept(friendsDto);
+        mv.put("res",result);
+        return mv;
+    }
+
+    @PostMapping("/cancelRequest")
+    public HashMap<String,Object> cancelRequest(@RequestBody FriendsDto friendsDto){
+        HashMap<String,Object> mv = new HashMap<>();
+        logger.info("내 아이디 확인: {}", friendsDto.getUser_id());
+        int result= friendsService.cancelRequest(friendsDto);
+        mv.put("res",result);
+        return mv;
+    }
+
 }

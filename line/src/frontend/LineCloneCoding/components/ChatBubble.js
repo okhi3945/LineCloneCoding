@@ -4,7 +4,7 @@ import moment from 'moment';
 import Avatar from './Avatar';
 
 const ChatBubble = ({ message, isMyMessage, isRead, timestamp, senderName, senderProfilePicture }) => {
-  
+
   return (
     <View style={isMyMessage ? styles.containerRight : styles.containerLeft}>
       {!isMyMessage && (
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 4,
-    marginTop: 10
+    marginTop: 10,
   },
   containerRight: {
     justifyContent: 'flex-end',
@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     maxWidth: '70%',
     position: 'relative',
+    marginTop:-7,
   },
   myBubble: {
     backgroundColor: '#7AD977',
@@ -98,7 +99,6 @@ const styles = StyleSheet.create({
     top: 3,
     marginHorizontal: 8,
     alignItems: 'flex-end',
-
   },
   messageInfoRight: {
     alignItems: 'flex-end',

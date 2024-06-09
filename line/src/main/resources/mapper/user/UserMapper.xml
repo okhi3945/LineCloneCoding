@@ -4,8 +4,8 @@
 
 <mapper namespace="com.dudgkr.line.db.model.user.mapper.UserMapper">
     <insert id="regist" parameterType="UserDto">
-        INSERT INTO users (ID,Password,name,phone)
-        VALUES (#{id},#{password},#{name},#{phone})
+        INSERT INTO users (ID,Password,name,phone, statusMessage)
+        VALUES (#{id},#{password},#{name},#{phone}, #{statusMessage})
     </insert>
 
     <select id="findAll" resultType="UserDto">

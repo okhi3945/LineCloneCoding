@@ -1,44 +1,35 @@
 //로그인 후 화면
-import { View, Text, StyleSheet, BackHandler, FlatList, TouchableOpacity } from 'react-native'
-import { useState, useEffect } from 'react'
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native'
+import { useState, useEffect, useContext } from 'react'
 import ProfileImage from './ProfileImage'
 import useUserInfo from './useUserInfo';
-import axios from 'axios'
+import { fetchFriendsList } from './api';
+import { FriendsContext } from './context';
+import { useIsFocused } from '@react-navigation/native';
 
 const Main = ({ route, navigation }) => {
-    console.log(route.params)
+    const isFocused = useIsFocused();
     const { user_id } = route.params;
     const { currentUserId, currentUserName } = useUserInfo();
-    const [friendsList, setFriendsList] = useState([]);
+    const { friendsList, setFriendsList } = useContext(FriendsContext);
 
     useEffect(() => {
-        const fetchFriendsList = async () => {
-            try {
-                const response = await axios.post('http://192.168.35.23:8008/boot/friends/friendsList', {
-                    user_id: user_id
-                });
-                console.log(111)
-                console.log(response.data)
-                setFriendsList(response.data.list);
-            } catch (error) {
-                console.error('Failed to fetch friends list:', error);
-            }
-        };
+        if (isFocused) {
+            const init = async () => {
+                const list = await fetchFriendsList(user_id);
+                setFriendsList(list);
+            };
 
-        fetchFriendsList();
-        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            return true;
-        });
-
-        return () => backHandler.remove();
-    }, []);
+            init();
+        }
+    }, [isFocused]);
 
     const renderFriendItem = ({ item }) => (
 
         <View style={styles.friendItem}>
-            <TouchableOpacity onPress={() => navigation.navigate('ChattingRoom', { currentUserId: user_id, targetUserId: item.id, partner : item.name  })}>
+            <TouchableOpacity onPress={() => navigation.navigate('ChattingRoom', { currentUserId: user_id, targetUserId: item.id, partner: item.name })}>
                 <ProfileImage source={require("../assets/user.png")} />
-                <View style={{ marginLeft: '20%',marginTop:-15 }}>
+                <View style={{ marginLeft: '20%', marginTop: -15 }}>
                     <Text style={styles.friendName}>{item.name}</Text>
                     <Text>{item.statusMessage}</Text>
                 </View>
@@ -47,7 +38,7 @@ const Main = ({ route, navigation }) => {
     );
 
     return (
-        <View>
+        <View style={{backgroundColor:'#FFFFFF'}}>
             <View style={styles.infoContainer}>
                 <View style={styles.leftContainer}>
                     <Text style={styles.idText}>{currentUserName}</Text>
@@ -57,6 +48,7 @@ const Main = ({ route, navigation }) => {
                     <ProfileImage source={require("../assets/lasco_13974601.png")} />
                 </View>
             </View>
+            <View style={styles.lengthContainer}><Text style={{fontWeight:'bold', fontSize:14}}>친구 목록 {friendsList.length}명</Text></View>
             <FlatList
                 data={friendsList}
                 keyExtractor={(item) => item.id.toString()}
@@ -74,6 +66,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         height: 90,
         backgroundColor: '#FFFFFF'
+    }, lengthContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+        margin:10
     }, tinyImage: {
         height: 25,
         width: 25,

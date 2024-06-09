@@ -14,6 +14,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 
 @Component
 @Log4j2
@@ -25,6 +27,8 @@ public class SocketIOController {
     @Autowired
     private MessagesService messagesService;
 
+    private ConcurrentHashMap<String, SocketIOClient> connectedClients = new ConcurrentHashMap<>();
+
     @PostConstruct
     public void initialize() {
         this.socketServer.addConnectListener(onUserConnectWithSocket);
@@ -33,9 +37,16 @@ public class SocketIOController {
     }
 
     public ConnectListener onUserConnectWithSocket = new ConnectListener() {
+
         @Override
         public void onConnect(SocketIOClient client) {
-            log.info("Perform operation on user connect in controller");
+            String clientId = client.getSessionId().toString();
+            if (!connectedClients.containsKey(clientId)) {
+                connectedClients.put(clientId, client);
+                log.info("New user connected with ID: " + clientId);
+            } else {
+                log.info("User with ID: " + clientId + " is already connected, ignoring duplicate connection.");
+            }
         }
     };
 

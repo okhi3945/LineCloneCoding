@@ -32,7 +32,7 @@ public class UserController {
     public HashMap<String,Object> regist(@RequestBody UserDto userDto){
         //HashMap은 뷰에 전달할 데이터를 담는 용도로 사용
         HashMap<String,Object> mv = new HashMap<>();
-
+        logger.info("아이디 확인: {}", userDto.getId());
         int resNum = userService.regist(userDto);
         mv.put("result",resNum);
         return mv;

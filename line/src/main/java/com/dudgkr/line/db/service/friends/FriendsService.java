@@ -10,7 +10,7 @@ public interface FriendsService {
     int addFriend(FriendsDto friendsDto);
     List<UserDto> friendsList(FriendsDto friendsDto);
     int accept(FriendsDto friendsDto);
-
+    int cancelRequest(FriendsDto friendsDto);
     List<UserDto> sentFriendRequests(FriendsDto friendsDto);
     List<UserDto> receivedFriendRequests(FriendsDto friendsDto);
 

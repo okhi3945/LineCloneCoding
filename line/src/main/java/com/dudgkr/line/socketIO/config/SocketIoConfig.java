@@ -34,6 +34,7 @@ public class SocketIoConfig {
         config.setPort(environment.getProperty("socket-server.port", Integer.class));
         server = new SocketIOServer(config);
         server.start();
+
         return server;
     }
 

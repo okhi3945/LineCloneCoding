@@ -1,11 +1,10 @@
 import { View, TextInput, StyleSheet, Text, InputAccessoryView, TouchableOpacity, } from 'react-native'
-import { useState, useEffect } from 'react'
+import { useState} from 'react'
 import { sendMessageToUser} from './SocketIOClient.js';
 import axios from 'axios'
 
-const MessageInput = ({ addMessage, currentUserId, targetUserId }) => {
+const MessageInput = ({ addMessage, currentUserId, targetUserId, scrollToBottom }) => {
     const [message, setMessage] = useState('');
-
     const onChangeInput = (event) => {
         setMessage(event);
     };
@@ -16,18 +15,11 @@ const MessageInput = ({ addMessage, currentUserId, targetUserId }) => {
         
         const newMessage = { message: message, senderName : currentUserId };
         addMessage(newMessage);
-
+        scrollToBottom()
         try {
 
             //메시지 소켓에 전송
             await sendMessageToUser({
-                senderName: currentUserId,
-                targetUserName: targetUserId,
-                message: message,
-            });
-
-            //메시지 db에 저장
-            await axios.post('http://192.168.35.23:8008/boot/messages/saveMessage', {
                 senderName: currentUserId,
                 targetUserName: targetUserId,
                 message: message,

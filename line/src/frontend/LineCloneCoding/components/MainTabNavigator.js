@@ -7,15 +7,21 @@ import TabBarIcon from './TabBarIcon'
 import InputModal from './InputModal';
 import useUserInfo from './useUserInfo';
 import axios from 'axios';
+import LogoutModal from './LogoutModal';
 
 const Tab = createBottomTabNavigator();
 
-function MainTabNavigator() {
+function MainTabNavigator({navigation}) {
   const { currentUserId, currentUserName } = useUserInfo();
   const [isModalVisible, setModalVisible] = useState(false);
-
+  const [logoutModalVisible,setLogoutModalVisible] = useState(false)
+  
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
+  };
+  
+  const toggleLogoutModal = () => {
+    setLogoutModalVisible(!logoutModalVisible);
   };
 
   const handleSend = async (friend_id) => {
@@ -59,7 +65,9 @@ function MainTabNavigator() {
                 <TouchableOpacity onPress={toggleModal}>
                   <Image style={styles.tinyImage} source={require('../assets/add-user.png')} />
                 </TouchableOpacity>
-                <Image style={styles.tinyImage} source={require('../assets/setting.png')} />
+                <TouchableOpacity onPress={toggleLogoutModal}>
+                  <Image style={styles.tinyImage} source={require('../assets/setting.png')} />
+                </TouchableOpacity>
               </View>
             ),
           }}
@@ -69,6 +77,7 @@ function MainTabNavigator() {
         </Tab.Screen>
       </Tab.Navigator>
       {currentUserId && <InputModal isVisible={isModalVisible} onBackdropPress={toggleModal} onSend={handleSend} userId={currentUserId} />}
+      <LogoutModal isVisible={logoutModalVisible} onBackdropPress={toggleLogoutModal} navigation={navigation} />
     </>
   );
 }

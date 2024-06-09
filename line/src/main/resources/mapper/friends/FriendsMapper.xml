@@ -20,7 +20,7 @@
 
     <!-- 친구 요청 수락 -->
     <update id="accept" parameterType="FriendsDto">
-        UPDATE friends SET status = 'accepted' WHERE user_id = #{user_id} AND friend_id = #{friend_id};
+        UPDATE friends SET status = 'accepted' WHERE user_id = #{friend_id} AND friend_id = #{user_id};
     </update>
 
     <!-- 요청 취소 -->

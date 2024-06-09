@@ -3,17 +3,19 @@ import io from 'socket.io-client';
 let socket = null;
 
 const connectToServer = () => {
-    // 이미 연결된 소켓이 있는지 확인
-    if (socket && socket.connected) {
-        console.log('이미 서버에 연결되어 있습니다.');
-        return;
-    }
+  socket = io('http://192.168.35.23:8077', {
+    transports: ['websocket'],
+  });
 
-    socket = io('http://192.168.35.23:8077', {
-        transports: ['websocket'],
-        autoConnect: false
-    });
+  socket.on('connect', () => {
+    console.log('Connected to server');
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Disconnected from server');
+  });
 };
+
 
 const sendMessageToUser = (props) => {
     console.log("보낸 메시지", props)

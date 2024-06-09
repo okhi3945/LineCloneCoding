@@ -24,6 +24,11 @@ public class FriendsServiceImpl implements FriendsService {
     }
 
     @Override
+    public int cancelRequest(FriendsDto friendsDto) {
+        return friendsMapper.cancelRequest(friendsDto);
+    }
+
+    @Override
     public List<UserDto> friendsList(FriendsDto friendsDto) {
         return friendsMapper.friendsList(friendsDto);
     }
